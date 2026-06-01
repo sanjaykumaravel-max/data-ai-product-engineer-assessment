@@ -1,47 +1,38 @@
-﻿# Task 1
+﻿# Task 1 - Product Scoping
 
-## Goal
-Scope an internal tool that helps a marketing technology team answer:
-"How is our marketing performing across channels right now, and where should we be focusing?"
-The tool should reduce manual reporting effort, improve consistency, and remove dependency on one person.
+## Objective
+Design (not overbuild) an internal tool that answers:
+"How is marketing performing across channels right now, and where should we be focusing?"
 
-## Problem Framing
-Today, answering cross-channel performance questions is manual, slow, and inconsistent.
-Different team members produce different answers based on personal methods.
-When the usual analyst is unavailable, response time and quality drop.
-The business needs a repeatable, fast, and trusted way to get the same core answer every time.
+## Deliverables
+- [Product Brief](./product-brief.md)
+- [Architecture Diagram](./architecture-diagram.md)
+- [Wireframe](./wireframe.md)
 
-## Primary User (v1)
-- Internal marketing analyst (primary)
+## Key Decisions
+- Primary v1 user is the internal marketing analyst.
+- v1 output must be consistent, fast, and explainable.
+- Tool wraps existing workflows and tools rather than replacing them.
+- Recommendation logic is deterministic in v1 to build trust.
 
-## Success Outcome (v1)
-- In under 5 minutes, the analyst can view cross-channel performance and identify where to focus next.
+## V1 Scope
+- Unified cross-channel summary for selected date range
+- Core KPI calculations: CTR, CVR, CPA, ROAS
+- Channel focus guidance: increase, maintain, review
+- Exportable summary for internal and client communication
 
-## Required Inputs
-- Date range
-- Channel/source identifier
-- Spend
-- Impressions
-- Clicks
-- Conversions
-- Revenue
+## Out Of Scope (v1)
+- Forecasting and predictive models
+- Auto-optimization of campaigns
+- Full client self-serve portal
+- Workflow/tool migration for the team
 
-## Scope
-- In scope:
-  - Unified cross-channel performance summary for a selected date range
-  - Core KPI calculations (CTR, CVR, CPA, ROAS)
-  - Simple recommendation hints for where to increase/decrease focus
-  - A consistent output format that can be reused across users
-- Out of scope:
-  - Client-facing portal in v1
-  - Predictive modeling and forecasting
-  - Campaign auto-optimization
-  - Replacing current tools or changing existing team workflow
+## Validation Criteria
+- New analyst can answer the core question in under 5 minutes.
+- Same input produces same output across team members.
+- Recommendations can be traced to visible KPI definitions.
 
-## Validation
-- Check whether a new analyst can answer the core business question in under 5 minutes using the scoped flow.
-- Verify KPI definitions and recommendation rules are transparent and reproducible.
-- Confirm output remains consistent when different team members run the same inputs.
-
-## Notes
-- Keep this file updated as scope decisions evolve.
+## If More Time Was Available
+- Role-based views for clients and managers
+- Scenario simulation for budget reallocation
+- Alerting and anomaly detection
