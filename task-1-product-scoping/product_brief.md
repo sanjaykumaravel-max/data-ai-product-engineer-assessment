@@ -1,52 +1,62 @@
 ﻿# Task 1 Product Brief
 
 ## Problem Statement
-The marketing team currently answers cross-channel performance questions by manually pulling data from multiple tools. This makes reporting slow, inconsistent across team members, and overly dependent on individual analysts.
+The marketing team currently answers cross-channel performance questions by manually collecting and reconciling data from multiple platforms. This process is slow, inconsistent, and dependent on individual analysts, which creates delays and variable output quality.
 
-## Primary User
-Internal marketing analyst (v1).
+The core business question is:
+"How is our marketing performing across channels right now, and where should we be focusing?"
+
+## Primary Users
+- Internal Marketing Analyst (primary): needs fast, reliable cross-channel performance analysis for daily decision support.
+- Marketing Manager (secondary): needs consistent summaries for budget and priority decisions.
 
 ## User Pain Points
-- Data is spread across tools and must be manually stitched.
-- Output format changes depending on who prepares it.
-- Turnaround time is too slow for regular decision-making.
-- If a key analyst is unavailable, requests are delayed.
+- Manual data collection across tools consumes analyst time.
+- KPI definitions are applied inconsistently across team members.
+- Reporting outputs vary in format and interpretation.
+- Decisions are delayed when key individuals are unavailable.
+- Limited trust when data freshness and calculation logic are unclear.
 
 ## Proposed Solution
-A lightweight internal decision-support tool that consolidates channel metrics, computes standard KPIs, and returns clear focus guidance in a consistent format. The tool wraps around current tools and workflows rather than replacing them.
+Build a lightweight internal analytics assistant that consolidates channel performance inputs, standardizes KPI calculations, and produces clear, explainable focus guidance.
 
-## v1 Features
-- Date-range based cross-channel performance summary.
-- Normalized metrics table across channels.
-- KPI calculations: CTR, CVR, CPA, ROAS.
-- Simple and explainable focus guidance (increase, maintain, review/reduce).
-- Shareable summary and CSV export.
-- Visible data freshness indicator (last sync timestamp).
+Design principle: integrate with current tools and workflows rather than replacing them.
 
-## Out-of-Scope Features
-- Forecasting and predictive modeling.
-- Campaign auto-optimization.
-- Full client self-serve portal.
-- Replacing source tools or changing team workflows.
-- Advanced anomaly detection in v1.
+## Key Features For v1
+- Date-filtered cross-channel performance view.
+- Standardized KPI layer: CTR, CVR, CPA, ROAS.
+- Channel ranking with simple guidance labels (Increase, Maintain, Review/Reduce).
+- Transparent metric definitions and rule explanations.
+- Data freshness indicator (last successful sync timestamp).
+- Exportable summary (CSV/copy-ready notes) for internal sharing.
 
-## Data Sources
-- Ad platform exports/APIs (spend, impressions, clicks).
-- Web analytics data (sessions, engagement/conversion context).
-- CRM or conversion system data (conversions, revenue).
-- User-selected filters (date range, brand, region/channel).
+## Out-of-Scope Features (v1)
+- Predictive forecasting and media mix modeling.
+- Automated campaign optimization or bid changes.
+- Client-facing self-serve portal.
+- Workflow/tool replacement for existing marketing stack.
+- Complex anomaly detection and alerting frameworks.
+
+## Data Flow Overview
+1. Analyst selects filters (date range, brand, region/channel scope).
+2. Connector layer pulls required metrics from existing ad, analytics, and conversion sources.
+3. Normalization layer maps source fields to a common schema and validates data types/nulls.
+4. KPI engine computes standardized metrics (CTR, CVR, CPA, ROAS).
+5. Rule engine assigns focus guidance based on transparent thresholds.
+6. Tool presents summary table, recommendations, and export options.
 
 ## Success Metrics
-- Analyst can answer the core question in under 5 minutes.
-- Same inputs produce consistent outputs across users.
-- Recommendation statements are traceable to KPI definitions.
-- Reduced manual reporting effort for recurring performance requests.
+- Time-to-answer: analysts can produce a decision-ready summary in under 5 minutes.
+- Consistency: same input data yields the same output across users.
+- Adoption: majority of recurring cross-channel performance requests use the tool.
+- Quality: reduction in manual reporting rework and clarification back-and-forth.
+- Trust: recommendation outputs are traceable to visible KPI logic and source timestamps.
 
-## Risks & Constraints
-- Constraint: team will not change existing tools/workflows.
-- Risk: inconsistent metric definitions across sources.
-  - Mitigation: shared metric mapping and definitions.
-- Risk: low trust in automated recommendations.
-  - Mitigation: deterministic rules and formula transparency.
-- Risk: stale or delayed source data.
-  - Mitigation: sync timestamp and stale-data warning.
+## Risks and Constraints
+- Constraint: team will continue using current tools/workflows.
+- Risk: source systems use inconsistent metric definitions.
+  - Mitigation: shared metric dictionary and explicit mapping rules.
+- Risk: stale/incomplete upstream data impacts confidence.
+  - Mitigation: freshness indicators and missing-data flags in output.
+- Risk: users may distrust automated guidance.
+  - Mitigation: deterministic logic, visible formulas, and recommendation rationale.
