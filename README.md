@@ -6,7 +6,6 @@ This repository contains both required assessment tasks, executed with emphasis 
 - `task-1-product-scoping/` - Task 1 product scoping deliverables
 - `task-2-data-pipeline/` - Task 2 Python data pipeline implementation
 - `docs/` - project planning and walkthrough support docs
-- `assets/` - supporting assets if needed
 
 ## Working Principles
 1. Complete both tasks in one repository.
