@@ -5,7 +5,7 @@ This folder follows the required Task 1 workflow structure.
 ## Files
 - `README.md`
 - `product_brief.md`
-- `architecture_diagram.png`
+- `architecture_diagram.png`\n- `architecture_workflow.md`
 - `wireframe.png`
 - `walkthrough_notes.md`\n- `v1_scope.md`
 
