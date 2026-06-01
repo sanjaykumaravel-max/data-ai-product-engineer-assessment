@@ -9,7 +9,7 @@ SELECT
   MAX(temperature_c) AS max_temp_c,
   MIN(temperature_c) AS min_temp_c,
   ROUND(AVG(wind_speed_kmh), 2) AS avg_wind_kmh,
-  SUM(CASE WHEN precipitation_mm > 0 THEN 1 ELSE 0 END) AS rainy_hours
+  COUNTIF(precipitation_mm > 0) AS rainy_hours
 FROM `marketing_pipeline.weather_hourly`
 GROUP BY event_date
 ORDER BY event_date DESC;
