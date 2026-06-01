@@ -1,0 +1,6 @@
+﻿Sample query output (illustrative):
+
+event_date   | hourly_records | avg_temp_c | avg_wind_kmh | rainy_hours
+2026-05-31   | 24             | 28.44      | 11.62        | 6
+2026-05-30   | 24             | 27.91      | 10.88        | 2
+2026-05-29   | 24             | 29.07      | 12.04        | 0

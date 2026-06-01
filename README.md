@@ -11,7 +11,7 @@ This repository contains both required assessment tasks, executed with strong em
 ## Repository Structure
 
 - `task-1-product-scoping/` - Task 1 product scoping deliverables
-- `task-2/` - Task 2 pipeline implementation and notes
+- `task-2-data-pipeline/` - Task 2 pipeline implementation and notes
 - `docs/` - project planning, decision logs, and walkthrough support docs
 - `assets/` - diagrams, screenshots, and media assets
 
