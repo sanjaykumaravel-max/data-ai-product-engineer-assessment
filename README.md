@@ -1,39 +1,29 @@
 ﻿# Data & AI Product Engineer Assessment
 
-This repository contains both required assessment tasks, executed with strong emphasis on:
-- thinking quality
-- scope discipline
-- communication clarity
-- documentation quality
-- explainability
-- professional Git workflow
+This repository contains both required assessment tasks, executed with emphasis on clear thinking, realistic scope, documentation quality, explainability, and professional Git workflow.
 
 ## Repository Structure
-
 - `task-1-product-scoping/` - Task 1 product scoping deliverables
-- `task-2-data-pipeline/` - Task 2 pipeline implementation and notes
-- `docs/` - project planning, decision logs, and walkthrough support docs
-- `assets/` - diagrams, screenshots, and media assets
+- `task-2-data-pipeline/` - Task 2 Python data pipeline implementation
+- `docs/` - project planning and walkthrough support docs
+- `assets/` - supporting assets if needed
 
 ## Working Principles
-
-1. Complete both tasks within 4 days.
+1. Complete both tasks in one repository.
 2. Keep scope realistic and avoid overengineering.
 3. Prioritize reasoning clarity over technical complexity.
 4. Commit regularly with meaningful messages.
 5. Document tradeoffs and decisions as work progresses.
 
 ## 4-Day Execution Plan
-
 - Day 1: repository setup, planning, assumptions, and scope lock
-- Day 2: Task 1 implementation and validation
-- Day 3: Task 2 implementation and validation
-- Day 4: polish, testing, cleanup, and walkthrough recording
+- Day 2: Task 1 product scoping and validation
+- Day 3: Task 2 pipeline implementation and validation
+- Day 4: polish, cleanup, and walkthrough preparation
 
 ## Submission Checklist
-
-- [ ] Both tasks completed
-- [ ] Single repository with clean structure
-- [ ] Clear docs and decision rationale
-- [ ] Visible iterative commit history
-- [ ] Walkthrough-ready explanation
+- [x] Both tasks included
+- [x] Single repository with clear structure
+- [x] Task 1 product brief, scope, architecture, wireframe, and walkthrough notes
+- [x] Task 2 public API pipeline, transformation, BigQuery load, SQL query, and production notes
+- [x] Iterative commit history

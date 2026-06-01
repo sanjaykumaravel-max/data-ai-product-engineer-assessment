@@ -1,122 +1,98 @@
-﻿"""Integrated pipeline: fetch -> transform -> load (optional)
+﻿"""Transform Open-Meteo JSON into clean tabular weather data."""
 
-This script ties together the `fetch_weather`, `transform_weather`, and
-`load_bigquery` helpers in a simple CLI so the whole pipeline can run from
-one place. It keeps logic explicit and beginner-friendly.
-"""
-
-from typing import Optional
 import argparse
-import json
 import logging
 import sys
+from typing import Optional
 
 import pandas as pd
 
-# When running this file as a script the package-relative imports fail.
-# Add the script directory to `sys.path` so modules in the same folder
-# can be imported as top-level modules. This keeps the CLI runnable.
-import os
-SCRIPT_DIR = os.path.dirname(__file__)
-if SCRIPT_DIR not in sys.path:
-    sys.path.insert(0, SCRIPT_DIR)
-
-from fetch_weather import fetch_weather
-from transform_weather import transform_weather
+from config import get_settings
+from fetch_data import fetch_weather_data
 from load_bigquery import load_dataframe_to_bigquery
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
-def run_pipeline(
-    project: Optional[str],
-    dataset: Optional[str],
-    table: Optional[str],
-    lat: Optional[float],
-    lon: Optional[float],
-    input_json: Optional[str],
-    hourly: str = "temperature_2m",
-    timezone: str = "UTC",
-    dry_run: bool = False,
-):
-    """Run end-to-end pipeline.
+def transform_weather_data(raw_data: dict) -> pd.DataFrame:
+    """Flatten Open-Meteo hourly JSON and add analytical fields."""
+    hourly = raw_data.get("hourly", {})
 
-    If `input_json` is provided, the script will read the JSON produced by
-    `fetch_weather.py`. Otherwise it will call the Open-Meteo API for the
-    provided `lat`/`lon`.
-    """
-    if input_json:
-        logger.info("Loading input JSON from %s", input_json)
-        with open(input_json, "r", encoding="utf-8") as fh:
-            raw = json.load(fh)
-    else:
-        if lat is None or lon is None:
-            raise ValueError("Latitude and longitude must be provided when not using --input")
-        raw = fetch_weather(latitude=lat, longitude=lon, hourly=hourly, timezone=timezone)
+    df = pd.DataFrame(
+        {
+            "timestamp_utc": hourly.get("time", []),
+            "temperature_c": hourly.get("temperature_2m", []),
+            "precipitation_mm": hourly.get("precipitation", []),
+            "wind_speed_kmh": hourly.get("wind_speed_10m", []),
+            "relative_humidity_pct": hourly.get("relative_humidity_2m", []),
+        }
+    )
 
-    logger.info("Transforming weather data")
-    df = transform_weather(raw)
+    if df.empty:
+        raise ValueError("No hourly data returned from API")
 
-    logger.info("Transformed DataFrame: %d rows, %d cols", len(df), len(df.columns))
+    df["timestamp_utc"] = pd.to_datetime(df["timestamp_utc"], errors="coerce")
+    numeric_cols = ["temperature_c", "precipitation_mm", "wind_speed_kmh", "relative_humidity_pct"]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    if dry_run:
-        # Print a short preview and exit
-        print(df.head().to_string(index=False))
-        return df
+    df = df.dropna(subset=["timestamp_utc"]).fillna(0)
 
-    # If load parameters are provided, attempt to load to BigQuery
-    if project and dataset and table:
-        logger.info("Loading DataFrame to BigQuery: %s.%s.%s", project, dataset, table)
-        fq_table = load_dataframe_to_bigquery(df, project_id=project, dataset_id=dataset, table_id=table)
-        logger.info("Load complete: %s", fq_table)
-        return fq_table
+    # Derived fields add simple analytical value beyond the raw API response.
+    df["is_rain_hour"] = (df["precipitation_mm"] > 0).astype(int)
+    df["temperature_band"] = pd.cut(
+        df["temperature_c"],
+        bins=[-100, 15, 25, 35, 100],
+        labels=["cool", "mild", "warm", "hot"],
+    ).astype(str)
 
-    logger.warning("No BigQuery destination provided; pipeline completed without loading.")
     return df
 
 
-def _parse_args():
-    p = argparse.ArgumentParser(description="Run weather fetch -> transform -> load pipeline")
-    input_group = p.add_mutually_exclusive_group(required=False)
-    input_group.add_argument("--input", "-i", help="Path to input JSON (structured output from fetch) ")
-    input_group.add_argument("--latlon", "-ll", nargs=2, type=float, metavar=("LAT", "LON"), help="Latitude and longitude to fetch from Open-Meteo")
+def run_pipeline(dry_run: bool = False) -> Optional[str]:
+    """Run fetch -> transform -> optional BigQuery load using environment config."""
+    settings = get_settings()
 
-    p.add_argument("--hourly", default="temperature_2m", help="Hourly fields to request (comma separated)")
-    p.add_argument("--timezone", default="UTC", help="Timezone for API results")
-    p.add_argument("--project", help="GCP project id for BigQuery load")
-    p.add_argument("--dataset", help="BigQuery dataset id")
-    p.add_argument("--table", help="BigQuery table id")
-    p.add_argument("--dry-run", action="store_true", help="Do not load to BigQuery; print preview instead")
-    return p.parse_args()
+    raw_data = fetch_weather_data(
+        latitude=settings.latitude,
+        longitude=settings.longitude,
+        start_date=settings.start_date,
+        end_date=settings.end_date,
+        timezone=settings.timezone,
+    )
+    df = transform_weather_data(raw_data)
+    logger.info("Transformed rows: %s", len(df))
+
+    if dry_run:
+        print(df.head().to_string(index=False))
+        return None
+
+    table_name = load_dataframe_to_bigquery(
+        df,
+        project_id=settings.google_cloud_project,
+        dataset_id=settings.bq_dataset,
+        table_id=settings.bq_table,
+    )
+    logger.info("Loaded data to BigQuery table: %s", table_name)
+    return table_name
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Transform Open-Meteo data and optionally load to BigQuery")
+    parser.add_argument("--dry-run", action="store_true", help="Fetch and transform only; do not load to BigQuery")
+    args = parser.parse_args()
+
+    try:
+        run_pipeline(dry_run=args.dry_run)
+    except Exception:
+        logger.exception("Pipeline failed")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    args = _parse_args()
-
-    lat = lon = None
-    if args.latlon:
-        lat, lon = args.latlon
-
-    try:
-        result = run_pipeline(
-            project=args.project,
-            dataset=args.dataset,
-            table=args.table,
-            lat=lat,
-            lon=lon,
-            input_json=args.input,
-            hourly=args.hourly,
-            timezone=args.timezone,
-            dry_run=args.dry_run,
-        )
-
-        if isinstance(result, pd.DataFrame):
-            logger.info("Pipeline finished: DataFrame returned (rows=%d)", len(result))
-        else:
-            logger.info("Pipeline finished: %s", str(result))
-
-    except Exception as exc:
-        logger.exception("Pipeline failed: %s", exc)
-        sys.exit(1)
+    main()
