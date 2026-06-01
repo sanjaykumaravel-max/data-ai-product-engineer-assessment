@@ -1,5 +1,6 @@
 ﻿-- BigQuery Standard SQL
--- Replace the table name if your BigQuery project, dataset, or table differs.
+-- Make sure the editor is using Standard SQL, not Legacy SQL.
+-- If your BigQuery project differs, replace the dataset/table path with your full project ID.
 
 SELECT
   DATE(timestamp_utc) AS weather_date,
@@ -10,3 +11,4 @@ SELECT
 FROM `marketing_pipeline.weather_hourly`
 GROUP BY weather_date
 ORDER BY weather_date DESC;
+

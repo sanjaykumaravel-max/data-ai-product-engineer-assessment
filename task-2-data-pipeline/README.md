@@ -53,3 +53,4 @@ The summary query returns daily record counts, average temperature, min/max temp
 - Scheduling: Cloud Scheduler + Cloud Run job, or cron for a simple server-based setup.
 - Monitoring: structured logs, non-zero exit codes, job failure alerts, row-count checks, and freshness checks.
 - Scaling: partition BigQuery by date, load incrementally, add API retry/backoff, and add data quality checks before loading.
+
