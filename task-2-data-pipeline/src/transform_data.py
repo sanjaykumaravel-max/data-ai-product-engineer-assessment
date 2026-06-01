@@ -13,9 +13,17 @@ import sys
 
 import pandas as pd
 
-from .fetch_weather import fetch_weather
-from .transform_weather import transform_weather
-from .load_bigquery import load_dataframe_to_bigquery
+# When running this file as a script the package-relative imports fail.
+# Add the script directory to `sys.path` so modules in the same folder
+# can be imported as top-level modules. This keeps the CLI runnable.
+import os
+SCRIPT_DIR = os.path.dirname(__file__)
+if SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, SCRIPT_DIR)
+
+from fetch_weather import fetch_weather
+from transform_weather import transform_weather
+from load_bigquery import load_dataframe_to_bigquery
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
