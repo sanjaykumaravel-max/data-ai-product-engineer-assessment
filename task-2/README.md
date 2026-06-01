@@ -8,7 +8,26 @@ Build a small but complete Python pipeline that uses a public API, transforms th
 
 ## Public API Choice
 - API: Open-Meteo
-- Reason: free, no API key required, structured hourly time-series response.
+- Why this API for v1:
+  - Free
+  - No API key required
+  - Simple JSON response
+  - Easy to transform into tabular data
+
+## Engineering Thinking
+- Error Handling:
+  - API request failures are caught and raised with clear error context.
+  - Unexpected payload shape (missing `hourly`) is validated and rejected.
+  - Pipeline exits non-zero on failure for operational visibility.
+- Parameterization:
+  - Script behavior is driven by environment variables (`.env`) for project, dataset, table, coordinates, and date range.
+  - Avoids hardcoded runtime values.
+- Logging:
+  - Pipeline logs start, transformation row count, and BigQuery load target.
+  - Failures are logged with stack traces for debugging.
+- Schema Design:
+  - Explicit BigQuery schema includes typed fields for timestamp, measures, and derived columns.
+  - Field names are clear and analytics-friendly.
 
 ## What This Pipeline Does
 1. Fetch hourly weather data from Open-Meteo for configurable location/date range.
@@ -54,11 +73,12 @@ Build a small but complete Python pipeline that uses a public API, transforms th
 
 ## Production Thinking
 - Scheduling:
-  - Run on schedule using Cloud Scheduler + Cloud Run job (or cron for local/server).
-- Failure Detection:
-  - Structured logs, non-zero exit on failure, alert on job failures.
-- 10x Scale Plan:
+  - Run on a schedule using Cloud Scheduler + Cloud Run job (or cron for local/server).
+- Monitoring:
+  - Use structured logs, job run status, and alerts on failed runs.
+  - Track row counts and freshness timestamps for data reliability.
+- Scaling (10x):
   - Partition BigQuery table by date.
-  - Move to incremental loads by last successful timestamp.
-  - Add retries with exponential backoff for API calls.
-  - Add data quality checks (row count thresholds, null-rate checks).
+  - Switch to incremental loads using last-success timestamp.
+  - Add retry/backoff strategy for API calls.
+  - Add data quality checks (row-count thresholds, null-rate checks).
