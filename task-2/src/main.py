@@ -1,4 +1,5 @@
 ﻿import logging
+import sys
 
 from config import get_settings
 from extract import fetch_weather_data
@@ -40,4 +41,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        logger.exception("Pipeline failed")
+        sys.exit(1)
