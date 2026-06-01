@@ -1,15 +1,12 @@
 ﻿-- BigQuery Standard SQL
--- Uses the default selected GCP project.
--- If needed, change the FROM clause to: `your-project-id.marketing_pipeline.weather_hourly`
+-- Replace the table name if your BigQuery project, dataset, or table differs.
 
 SELECT
-  DATE(timestamp_utc) AS event_date,
+  DATE(timestamp_utc) AS weather_date,
   COUNT(*) AS hourly_records,
-  ROUND(AVG(temperature_c), 2) AS avg_temp_c,
-  MAX(temperature_c) AS max_temp_c,
-  MIN(temperature_c) AS min_temp_c,
-  ROUND(AVG(wind_speed_kmh), 2) AS avg_wind_kmh,
+  ROUND(AVG(temperature_c), 2) AS avg_temperature_c,
+  ROUND(AVG(wind_speed_kmh), 2) AS avg_wind_speed_kmh,
   COUNTIF(precipitation_mm > 0) AS rainy_hours
 FROM `marketing_pipeline.weather_hourly`
-GROUP BY event_date
-ORDER BY event_date DESC;
+GROUP BY weather_date
+ORDER BY weather_date DESC;
