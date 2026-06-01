@@ -7,7 +7,7 @@ This folder follows the required Task 1 workflow structure.
 - `product_brief.md`
 - `architecture_diagram.png`
 - `wireframe.png`
-- `walkthrough_notes.md`
+- `walkthrough_notes.md`\n- `v1_scope.md`
 
 ## What This Covers
 - Problem framing and product objective
